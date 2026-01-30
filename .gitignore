@@ -101,3 +101,7 @@ dist
 
 # Gemini CLI temporary files
 .gemini-vue-preset.json
+
+# Vim swap files
+.*.swp
+.*.swo
