@@ -22,7 +22,7 @@ export default {
 
       // --- Camera ---
       camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.set(0, 20, 50);
+      camera.position.set(0, 100, 200); // Pulled camera back for larger scene
       camera.lookAt(scene.position);
 
       // --- Renderer ---
@@ -37,28 +37,40 @@ export default {
       scene.add(ambientLight);
 
       const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      directionalLight.position.set(50, 50, 50);
+      directionalLight.position.set(100, 100, 50); // Adjusted light position for larger terrain
       directionalLight.castShadow = true;
       // Configure shadow properties
-      directionalLight.shadow.mapSize.width = 1024;
-      directionalLight.shadow.mapSize.height = 1024;
+      directionalLight.shadow.mapSize.width = 2048; // Increased shadow map size for better quality
+      directionalLight.shadow.mapSize.height = 2048;
       directionalLight.shadow.camera.near = 0.5;
       directionalLight.shadow.camera.far = 500;
-      directionalLight.shadow.camera.left = -100;
-      directionalLight.shadow.camera.right = 100;
-      directionalLight.shadow.camera.top = 100;
-      directionalLight.shadow.camera.bottom = -100;
+      directionalLight.shadow.camera.left = -250;
+      directionalLight.shadow.camera.right = 250;
+      directionalLight.shadow.camera.top = 250;
+      directionalLight.shadow.camera.bottom = -250;
       scene.add(directionalLight);
 
       // --- Terrain ---
-      const terrainGeometry = new THREE.PlaneGeometry(100, 100, 50, 50);
+      const terrainGeometry = new THREE.PlaneGeometry(500, 500, 200, 200);
       const terrainMaterial = new THREE.MeshStandardMaterial({
         color: 0x3c7a28,
         wireframe: false,
-        roughness: 0.8,
-        metalness: 0.2
+        roughness: 0.9,
+        metalness: 0.1
       });
       const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
+      
+      // Generate Mountains and Valleys
+      const vertices = terrain.geometry.attributes.position.array;
+      for (let i = 0; i <= vertices.length; i += 3) {
+        // Modify the Z-coordinate (which becomes Y after rotation)
+        const x = vertices[i];
+        const y = vertices[i + 1];
+        vertices[i + 2] = 15 * (Math.sin(x * 0.02) + Math.sin(y * 0.03));
+      }
+      terrain.geometry.attributes.position.needsUpdate = true;
+      terrain.geometry.computeVertexNormals();
+
       terrain.rotation.x = -Math.PI / 2; // Rotate to be flat
       terrain.receiveShadow = true; // Allow terrain to receive shadows
       scene.add(terrain);
@@ -71,7 +83,11 @@ export default {
         metalness: 0.6
       });
       const ball = new THREE.Mesh(ballGeometry, ballMaterial);
-      ball.position.y = 2; // Place it on top of the terrain (radius is 2)
+      
+      // Position ball on the generated terrain
+      const terrainHeightAtOrigin = 15 * (Math.sin(0) + Math.sin(0));
+      ball.position.y = terrainHeightAtOrigin + 2; // Place it on top of the terrain (radius is 2)
+
       ball.castShadow = true; // Allow ball to cast shadows
       scene.add(ball);
 
