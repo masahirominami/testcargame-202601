@@ -82,55 +82,12 @@ export default {
       terrain.receiveShadow = true; // Allow terrain to receive shadows
       scene.add(terrain);
       
-      // --- Ball ---
-      const ballGeometry = new THREE.SphereGeometry(2, 32, 32);
-      const ballMaterial = new THREE.MeshStandardMaterial({
-        color: 0xff0000,
-        roughness: 0.4,
-        metalness: 0.6
-      });
-      const ball = new THREE.Mesh(ballGeometry, ballMaterial);
-      
-      // Position ball on the generated terrain
-      const getTerrainHeight = (x, z) => {
-        const distance = Math.sqrt(x * x + z * z);
-        if (distance > terrainRadius) {
-          return -500;
-        }
-        // This function must match the terrain generation logic
-        return 15 * (Math.sin(x * 0.02) + Math.sin(z * 0.03));
-      };
-      
-      const terrainHeightAtOrigin = getTerrainHeight(0, 0);
-      ball.position.y = terrainHeightAtOrigin + 10; // Start the ball a bit higher
-      
-      ball.castShadow = true; // Allow ball to cast shadows
-      scene.add(ball);
-
       // --- Physics ---
       const clock = new THREE.Clock();
-      const velocity = new THREE.Vector3(15, 0, 10); // Give it a more interesting initial push
-      const gravity = new THREE.Vector3(0, -9.8, 0);
-      const ballRadius = 2;
 
       // --- Animation Loop ---
       const animate = () => {
         animationId = requestAnimationFrame(animate);
-
-        const delta = clock.getDelta();
-
-        // Apply gravity
-        velocity.add(gravity.clone().multiplyScalar(delta));
-
-        // Update position
-        ball.position.add(velocity.clone().multiplyScalar(delta));
-
-        // Collision detection with terrain
-        const terrainHeight = getTerrainHeight(ball.position.x, ball.position.z);
-        if (ball.position.y < terrainHeight + ballRadius) {
-          ball.position.y = terrainHeight + ballRadius;
-          velocity.y *= -0.6; // Bounce with energy loss
-        }
 
         renderer.render(scene, camera);
       };
@@ -154,8 +111,6 @@ export default {
         // Dispose geometries and materials
         terrainGeometry.dispose();
         terrainMaterial.dispose();
-        ballGeometry.dispose();
-        ballMaterial.dispose();
       });
     });
 
