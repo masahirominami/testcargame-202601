@@ -1,14 +1,14 @@
 <template>
-  <Scene />
+  <ThreeScene />
 </template>
 
 <script>
-import Scene from './components/Scene.vue';
+import ThreeScene from './components/ThreeScene.vue';
 
 export default {
   name: 'App',
   components: {
-    Scene,
+    ThreeScene,
   },
 };
 </script>

@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { onMounted, onUnmounted, ref } from 'vue';
 
 export default {
-  name: 'Scene',
+  name: 'ThreeScene',
   setup() {
     const container = ref(null);
     let renderer;
