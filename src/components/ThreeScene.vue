@@ -4,6 +4,7 @@
 
 <script>
 import * as THREE from 'three';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { generateTerrain } from '../utils/terrainGenerator.js';
 
 export default {
@@ -56,7 +57,6 @@ export default {
       scene.add(terrain);
       
       // --- Physics ---
-      const clock = new THREE.Clock();
 
       // --- Animation Loop ---
       const animate = () => {
