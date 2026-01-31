@@ -61,12 +61,19 @@ export default {
       const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
       
       // Generate Mountains and Valleys
+      const terrainRadius = 240;
       const vertices = terrain.geometry.attributes.position.array;
       for (let i = 0; i <= vertices.length; i += 3) {
-        // Modify the Z-coordinate (which becomes Y after rotation)
         const x = vertices[i];
         const y = vertices[i + 1];
-        vertices[i + 2] = 15 * (Math.sin(x * 0.02) + Math.sin(y * 0.03));
+        const distance = Math.sqrt(x * x + y * y);
+
+        if (distance > terrainRadius) {
+          vertices[i + 2] = -500; // Create a sharp cliff
+        } else {
+          // Modify the Z-coordinate (which becomes Y after rotation)
+          vertices[i + 2] = 15 * (Math.sin(x * 0.02) + Math.sin(y * 0.03));
+        }
       }
       terrain.geometry.attributes.position.needsUpdate = true;
       terrain.geometry.computeVertexNormals();
@@ -86,6 +93,10 @@ export default {
       
       // Position ball on the generated terrain
       const getTerrainHeight = (x, z) => {
+        const distance = Math.sqrt(x * x + z * z);
+        if (distance > terrainRadius) {
+          return -500;
+        }
         // This function must match the terrain generation logic
         return 15 * (Math.sin(x * 0.02) + Math.sin(z * 0.03));
       };
@@ -98,7 +109,7 @@ export default {
 
       // --- Physics ---
       const clock = new THREE.Clock();
-      const velocity = new THREE.Vector3(5, 0, 0); // Initial push
+      const velocity = new THREE.Vector3(15, 0, 10); // Give it a more interesting initial push
       const gravity = new THREE.Vector3(0, -9.8, 0);
       const ballRadius = 2;
 
