@@ -47,5 +47,13 @@ export function generateTerrain({
   terrain.rotation.x = -Math.PI / 2; // Rotate to be flat
   terrain.receiveShadow = true; // Allow terrain to receive shadows
 
-  return terrain;
+  const getTerrainHeight = (x, z) => {
+    const distance = Math.sqrt(x * x + z * z);
+    if (distance > terrainRadius) {
+      return -500;
+    }
+    return mountainSize * (Math.sin(x * freq) + Math.sin(z * (freq * 1.5)));
+  };
+
+  return { terrain, getTerrainHeight };
 }

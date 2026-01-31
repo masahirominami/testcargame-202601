@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { generateTerrain } from '../utils/terrainGenerator.js';
+import { generateCar } from '../utils/carGenerator.js'; // Import car generator
 
 export default {
   name: 'ThreeScene',
@@ -16,6 +17,7 @@ export default {
     let camera;
     let animationId;
     let terrain; // Keep a reference to the terrain for disposal
+    let car;     // Keep a reference to the car for disposal
 
     onMounted(() => {
       // --- Basic Scene Setup ---
@@ -53,9 +55,18 @@ export default {
       scene.add(directionalLight);
 
       // --- Terrain ---
-      terrain = generateTerrain({ mountainSize: 20, numberOfMountains: 2 });
+      const terrainResult = generateTerrain({ mountainSize: 20, numberOfMountains: 2 });
+      terrain = terrainResult.terrain;
+      const getTerrainHeight = terrainResult.getTerrainHeight; // Get height function
       scene.add(terrain);
       
+      // --- Car ---
+      car = generateCar();
+      const carHeightOffset = 1.5; // Wheel radius
+      car.position.y = getTerrainHeight(0, 0) + carHeightOffset;
+      car.rotation.y = Math.PI / 2; // Face it along Z-axis initially
+      scene.add(car);
+
       // --- Physics ---
 
       // --- Animation Loop ---
@@ -85,6 +96,12 @@ export default {
         if (terrain) {
           terrain.geometry.dispose();
           terrain.material.dispose();
+        }
+        if (car) {
+          car.children.forEach(child => {
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) child.material.dispose();
+          });
         }
       });
     });
