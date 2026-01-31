@@ -21,8 +21,8 @@ export default {
       scene.background = new THREE.Color(0xabcdef);
 
       // --- Camera ---
-      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.set(0, 100, 200); // Pulled camera back for larger scene
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000); // Increased far plane
+      camera.position.set(0, 200, 400); // Pulled camera back for larger scene
       camera.lookAt(scene.position);
 
       // --- Renderer ---
@@ -37,21 +37,21 @@ export default {
       scene.add(ambientLight);
 
       const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      directionalLight.position.set(100, 100, 50); // Adjusted light position for larger terrain
+      directionalLight.position.set(200, 200, 100); // Adjusted light position for larger terrain
       directionalLight.castShadow = true;
       // Configure shadow properties
-      directionalLight.shadow.mapSize.width = 2048; // Increased shadow map size for better quality
-      directionalLight.shadow.mapSize.height = 2048;
+      directionalLight.shadow.mapSize.width = 4096; // Increased shadow map size for better quality
+      directionalLight.shadow.mapSize.height = 4096;
       directionalLight.shadow.camera.near = 0.5;
-      directionalLight.shadow.camera.far = 500;
-      directionalLight.shadow.camera.left = -250;
-      directionalLight.shadow.camera.right = 250;
-      directionalLight.shadow.camera.top = 250;
-      directionalLight.shadow.camera.bottom = -250;
+      directionalLight.shadow.camera.far = 1000;
+      directionalLight.shadow.camera.left = -500;
+      directionalLight.shadow.camera.right = 500;
+      directionalLight.shadow.camera.top = 500;
+      directionalLight.shadow.camera.bottom = -500;
       scene.add(directionalLight);
 
       // --- Terrain ---
-      const terrainGeometry = new THREE.PlaneGeometry(500, 500, 200, 200);
+      const terrainGeometry = new THREE.PlaneGeometry(1000, 1000, 400, 400);
       const terrainMaterial = new THREE.MeshStandardMaterial({
         color: 0x3c7a28,
         wireframe: false,
@@ -61,7 +61,7 @@ export default {
       const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
       
       // Generate Mountains and Valleys
-      const terrainRadius = 240;
+      const terrainRadius = 480;
       const vertices = terrain.geometry.attributes.position.array;
       for (let i = 0; i <= vertices.length; i += 3) {
         const x = vertices[i];
