@@ -4,7 +4,7 @@
 
 <script>
 import * as THREE from 'three';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { generateTerrain } from '../utils/terrainGenerator.js';
 
 export default {
   name: 'ThreeScene',
@@ -14,6 +14,7 @@ export default {
     let scene;
     let camera;
     let animationId;
+    let terrain; // Keep a reference to the terrain for disposal
 
     onMounted(() => {
       // --- Basic Scene Setup ---
@@ -51,35 +52,7 @@ export default {
       scene.add(directionalLight);
 
       // --- Terrain ---
-      const terrainGeometry = new THREE.PlaneGeometry(1000, 1000, 400, 400);
-      const terrainMaterial = new THREE.MeshStandardMaterial({
-        color: 0x3c7a28,
-        wireframe: false,
-        roughness: 0.9,
-        metalness: 0.1
-      });
-      const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
-      
-      // Generate Mountains and Valleys
-      const terrainRadius = 480;
-      const vertices = terrain.geometry.attributes.position.array;
-      for (let i = 0; i <= vertices.length; i += 3) {
-        const x = vertices[i];
-        const y = vertices[i + 1];
-        const distance = Math.sqrt(x * x + y * y);
-
-        if (distance > terrainRadius) {
-          vertices[i + 2] = -500; // Create a sharp cliff
-        } else {
-          // Modify the Z-coordinate (which becomes Y after rotation)
-          vertices[i + 2] = 15 * (Math.sin(x * 0.02) + Math.sin(y * 0.03));
-        }
-      }
-      terrain.geometry.attributes.position.needsUpdate = true;
-      terrain.geometry.computeVertexNormals();
-
-      terrain.rotation.x = -Math.PI / 2; // Rotate to be flat
-      terrain.receiveShadow = true; // Allow terrain to receive shadows
+      terrain = generateTerrain({ mountainSize: 20, numberOfMountains: 2 });
       scene.add(terrain);
       
       // --- Physics ---
@@ -109,8 +82,10 @@ export default {
           renderer.dispose();
         }
         // Dispose geometries and materials
-        terrainGeometry.dispose();
-        terrainMaterial.dispose();
+        if (terrain) {
+          terrain.geometry.dispose();
+          terrain.material.dispose();
+        }
       });
     });
 
