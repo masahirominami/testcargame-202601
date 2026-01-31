@@ -5,6 +5,7 @@
 <script>
 import * as THREE from 'three';
 import { onMounted, onUnmounted, ref } from 'vue';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'; // Import OrbitControls
 import { generateTerrain } from '../utils/terrainGenerator.js';
 import { generateCar } from '../utils/carGenerator.js'; // Import car generator
 
@@ -18,6 +19,7 @@ export default {
     let animationId;
     let terrain; // Keep a reference to the terrain for disposal
     let car;     // Keep a reference to the car for disposal
+    let controls; // Declare controls variable
 
     onMounted(() => {
       // --- Basic Scene Setup ---
@@ -35,6 +37,11 @@ export default {
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Softer shadows
       container.value.appendChild(renderer.domElement);
+
+      // --- Controls ---
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; // An animation loop is required when damping is enabled
+      controls.dampingFactor = 0.05;
 
       // --- Lighting ---
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -72,7 +79,7 @@ export default {
       // --- Animation Loop ---
       const animate = () => {
         animationId = requestAnimationFrame(animate);
-
+        controls.update(); // Update controls
         renderer.render(scene, camera);
       };
       animate();
@@ -91,6 +98,9 @@ export default {
         window.removeEventListener('resize', handleResize);
         if (renderer) {
           renderer.dispose();
+        }
+        if (controls) {
+          controls.dispose(); // Dispose controls
         }
         // Dispose geometries and materials
         if (terrain) {
