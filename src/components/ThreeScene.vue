@@ -28,6 +28,8 @@ export default {
       // --- Renderer ---
       renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Softer shadows
       container.value.appendChild(renderer.domElement);
 
       // --- Lighting ---
@@ -36,6 +38,16 @@ export default {
 
       const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
       directionalLight.position.set(50, 50, 50);
+      directionalLight.castShadow = true;
+      // Configure shadow properties
+      directionalLight.shadow.mapSize.width = 1024;
+      directionalLight.shadow.mapSize.height = 1024;
+      directionalLight.shadow.camera.near = 0.5;
+      directionalLight.shadow.camera.far = 500;
+      directionalLight.shadow.camera.left = -100;
+      directionalLight.shadow.camera.right = 100;
+      directionalLight.shadow.camera.top = 100;
+      directionalLight.shadow.camera.bottom = -100;
       scene.add(directionalLight);
 
       // --- Terrain ---
@@ -48,6 +60,7 @@ export default {
       });
       const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
       terrain.rotation.x = -Math.PI / 2; // Rotate to be flat
+      terrain.receiveShadow = true; // Allow terrain to receive shadows
       scene.add(terrain);
       
       // --- Ball ---
@@ -59,6 +72,7 @@ export default {
       });
       const ball = new THREE.Mesh(ballGeometry, ballMaterial);
       ball.position.y = 4; // Place it on top of the terrain
+      ball.castShadow = true; // Allow ball to cast shadows
       scene.add(ball);
 
 
