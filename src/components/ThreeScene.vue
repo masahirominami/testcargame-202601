@@ -71,7 +71,7 @@ export default {
         metalness: 0.6
       });
       const ball = new THREE.Mesh(ballGeometry, ballMaterial);
-      ball.position.y = 4; // Place it on top of the terrain
+      ball.position.y = 2; // Place it on top of the terrain (radius is 2)
       ball.castShadow = true; // Allow ball to cast shadows
       scene.add(ball);
 
