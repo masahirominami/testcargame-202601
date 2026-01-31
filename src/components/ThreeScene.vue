@@ -85,16 +85,42 @@ export default {
       const ball = new THREE.Mesh(ballGeometry, ballMaterial);
       
       // Position ball on the generated terrain
-      const terrainHeightAtOrigin = 15 * (Math.sin(0) + Math.sin(0));
-      ball.position.y = terrainHeightAtOrigin + 2; // Place it on top of the terrain (radius is 2)
-
+      const getTerrainHeight = (x, z) => {
+        // This function must match the terrain generation logic
+        return 15 * (Math.sin(x * 0.02) + Math.sin(z * 0.03));
+      };
+      
+      const terrainHeightAtOrigin = getTerrainHeight(0, 0);
+      ball.position.y = terrainHeightAtOrigin + 10; // Start the ball a bit higher
+      
       ball.castShadow = true; // Allow ball to cast shadows
       scene.add(ball);
 
+      // --- Physics ---
+      const clock = new THREE.Clock();
+      const velocity = new THREE.Vector3(5, 0, 0); // Initial push
+      const gravity = new THREE.Vector3(0, -9.8, 0);
+      const ballRadius = 2;
 
       // --- Animation Loop ---
       const animate = () => {
         animationId = requestAnimationFrame(animate);
+
+        const delta = clock.getDelta();
+
+        // Apply gravity
+        velocity.add(gravity.clone().multiplyScalar(delta));
+
+        // Update position
+        ball.position.add(velocity.clone().multiplyScalar(delta));
+
+        // Collision detection with terrain
+        const terrainHeight = getTerrainHeight(ball.position.x, ball.position.z);
+        if (ball.position.y < terrainHeight + ballRadius) {
+          ball.position.y = terrainHeight + ballRadius;
+          velocity.y *= -0.6; // Bounce with energy loss
+        }
+
         renderer.render(scene, camera);
       };
       animate();
